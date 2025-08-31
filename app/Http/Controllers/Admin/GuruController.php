@@ -37,7 +37,7 @@ class GuruController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_lengkap' => 'required|min:3|max:100|unique:guru',
-            'gelar' => 'required|min:3|max:10',
+            'gelar' => 'nullable|min:3|max:10',
             'nip' => 'nullable|digits:18|unique:guru',
             'jenis_kelamin' => 'required',
             'tempat_lahir' => 'required|min:3',
@@ -72,6 +72,7 @@ class GuruController extends Controller
                 'alamat' => $request->alamat,
                 'avatar' => 'default.png'
             ]);
+
             $guru->save();
             return back()->with('toast_success', 'Data guru berhasil ditambahkan');
         }
@@ -88,7 +89,8 @@ class GuruController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'gelar' => 'required|min:3|max:10',
+            'nama_lengkap' => 'required|min:3|max:100|unique:guru',
+            'gelar' => 'nullable|min:3|max:10',
             'nip' => 'nullable|digits:18',
             'jenis_kelamin' => 'required',
             'tempat_lahir' => 'required|min:3',
@@ -96,11 +98,15 @@ class GuruController extends Controller
             'nuptk' => 'nullable|digits:16',
             'alamat' => 'required|min:4|max:255',
         ]);
+
+        // dd($validator);
+
         if ($validator->fails()) {
             return back()->with('toast_error', $validator->messages()->all()[0])->withInput();
         } else {
             $guru = Guru::findorfail($id);
             $data_guru = [
+                'nama_lengkap' => strtoupper($request->nama_lengkap),
                 'gelar' => $request->gelar,
                 'nip' => $request->nip,
                 'jenis_kelamin' => $request->jenis_kelamin,
@@ -109,6 +115,8 @@ class GuruController extends Controller
                 'nuptk' => $request->nuptk,
                 'alamat' => $request->alamat,
             ];
+
+            // dd($guru);
 
             $guru->update($data_guru);
             return back()->with('toast_success', 'Data guru berhasil diedit');

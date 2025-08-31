@@ -53,6 +53,7 @@
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
+                  
                   <form name="contact-form" action="{{ route('guru.import') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
@@ -101,7 +102,7 @@
                         </div>
                       </div>
                       <div class="form-group row">
-                        <label for="gelar" class="col-sm-3 col-form-label">Gelar</label>
+                        <label for="gelar" class="col-sm-3 col-form-label">Gelar <small><i>(opsional)</i></small></label>
                         <div class="col-sm-9">
                           <input type="text" class="form-control" id="gelar" name="gelar" placeholder="Gelar" value="{{old('gelar')}}">
                         </div>
@@ -179,7 +180,7 @@
                       <td>{{$guru->nip}}</td>
                       <td>{{$guru->nuptk}}</td>
                       <td>{{$guru->tempat_lahir}}</td>
-                      <td>{{$guru->tanggal_lahir}}</td>
+                      <td>{{ \Carbon\Carbon::parse($guru->tanggal_lahir)->translatedFormat('d F Y') }}</td>
                       <td>
                         @if($guru->jenis_kelamin == 'L')
                         Laki-Laki
@@ -218,7 +219,7 @@
                               <div class="form-group row">
                                 <label for="nama_lengkap" class="col-sm-3 col-form-label">Nama Lengkap</label>
                                 <div class="col-sm-9">
-                                  <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" value="{{$guru->nama_lengkap}}" readonly>
+                                  <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" value="{{$guru->nama_lengkap}}">
                                 </div>
                               </div>
                               <div class="form-group row">
@@ -249,7 +250,7 @@
                               <div class="form-group row">
                                 <label for="tanggal_lahir" class="col-sm-3 col-form-label">Tanggal Lahir</label>
                                 <div class="col-sm-9">
-                                  <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" value="{{$guru->tanggal_lahir}}">
+                                  <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" value="{{ \Carbon\Carbon::parse($guru->tanggal_lahir)->format('Y-m-d') }}">
                                 </div>
                               </div>
                               <div class="form-group row">

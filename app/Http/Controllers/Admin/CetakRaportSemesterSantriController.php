@@ -61,7 +61,7 @@ class CetakRaportSemesterSantriController extends Controller
             return redirect()->back()->with('error', 'Tidak ada data yang dipilih');
         }
 
-        $anggota_kelas_list = AnggotaKelas::with(['santri', 'kelas.tapel', 'kelas.guru'])->whereIn('id', $idsArray)->get();
+        $anggota_kelas_list = AnggotaKelas::with(['santri', 'kelas.tapel.tgl_raport', 'kelas.guru'])->whereIn('id', $idsArray)->get();
         if ($anggota_kelas_list->isEmpty()) {
             return redirect()->back()->with('error', 'Raport tidak ditemukan');
         }
@@ -113,6 +113,8 @@ class CetakRaportSemesterSantriController extends Controller
         ]);
 
         $jumlah_santri = $anggota_kelas_list->count();
+
+        $tanggal_raport = TglRaport::where('tapel_id', session()->get('tapel_id'))->first();
 
         foreach ($anggota_kelas_list as $anggota) {
             $kelas_id = $anggota->kelas_id;
@@ -198,7 +200,8 @@ class CetakRaportSemesterSantriController extends Controller
                 'rata_rata_kelas',
                 'jumlahNilairata',
                 'jumlah_santri',
-                'peringkat'
+                'peringkat',
+                'tanggal_raport'
             ))->render();
 
             $mpdf->AddPage();

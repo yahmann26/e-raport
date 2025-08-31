@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-
 class UserController extends Controller
 {
     /**
@@ -22,10 +21,12 @@ class UserController extends Controller
     public function index()
     {
         $title = 'Data User';
-        $data_user = User::where('id', '!=', Auth::user()->id)->orderBy('role', 'ASC')->orderBy('username', 'ASC')->get();
+        $data_user = User::where('id', '!=', Auth::user()->id)
+            ->orderBy('role', 'ASC')
+            ->orderBy('username', 'ASC')
+            ->get();
         return view('admin.user.index', compact('title', 'data_user'));
     }
-
 
     /**
      * Store a newly created resource in storage.
@@ -43,13 +44,15 @@ class UserController extends Controller
             'nomor_hp' => 'required|numeric|digits_between:11,13|unique:admin',
         ]);
         if ($validator->fails()) {
-            return back()->with('toast_error', $validator->messages()->all()[0])->withInput();
+            return back()
+                ->with('toast_error', $validator->messages()->all()[0])
+                ->withInput();
         } else {
             $user = new User([
                 'username' => strtolower(str_replace(' ', '', $request->nama_lengkap)),
                 'password' => bcrypt('123456'),
                 'role' => 1,
-                'status' => true
+                'status' => true,
             ]);
             $user->save();
 
@@ -60,7 +63,7 @@ class UserController extends Controller
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'email' => $request->email,
                 'nomor_hp' => $request->nomor_hp,
-                'avatar' => 'default.png'
+                'avatar' => 'default.png',
             ]);
             $admin->save();
             return back()->with('toast_success', 'User berhasil ditambahkan');
@@ -76,19 +79,19 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::findorfail($id);
-        if (is_null($request->password)) {
-            $data = [
-                'status' => $request->status
-            ];
+        $user = User::findOrFail($id);
+
+        $data = $request->only(['username', 'password', 'status']);
+
+        if (!empty($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
         } else {
-            $data = [
-                'password' => bcrypt($request->password),
-                'status' => $request->status
-            ];
+            unset($data['password']);
         }
+
         $user->update($data);
-        return back()->with('toast_success', 'User berhasil diedit');
+
+        return back()->with('toast_success', 'User berhasil diupdate');
     }
 
     // public function export()

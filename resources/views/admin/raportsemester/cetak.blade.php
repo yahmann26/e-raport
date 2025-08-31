@@ -257,7 +257,7 @@
 
         <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 48px;">
             <div>
-                <div style="margin-bottom: 48px;">Kendangari, ................................, 2022</div>
+                <div style="margin-bottom: 48px;">Sendangari, ................................, 2022</div>
                 <div>Orang Tua / Wali</div>
                 <div style="margin-top: 64px;">(...........................................)</div>
             </div>

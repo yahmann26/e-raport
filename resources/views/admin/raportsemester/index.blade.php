@@ -119,16 +119,39 @@
     const checkboxes = document.querySelectorAll('.anggotaCheckbox');
     const printButton = document.getElementById('printButton');
     const selectAll = document.getElementById('selectAll');
+    const headerCheckbox = document.getElementById('headerCheckbox');
 
     function togglePrintButton() {
         const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
         printButton.style.display = anyChecked ? 'inline-block' : 'none';
     }
 
-    checkboxes.forEach(cb => cb.addEventListener('change', togglePrintButton));
+    function updateHeaderBold() {
+        if (Array.from(checkboxes).every(cb => cb.checked)) {
+            headerCheckbox.classList.add('header-bold');
+        } else {
+            headerCheckbox.classList.remove('header-bold');
+        }
+    }
 
-    selectAll.addEventListener('change', function() {
+    // Saat "Select All" diklik
+    selectAll.addEventListener('change', function () {
         checkboxes.forEach(cb => cb.checked = this.checked);
         togglePrintButton();
+        updateHeaderBold();
     });
+
+    // Saat checkbox individual diklik
+    checkboxes.forEach(cb => cb.addEventListener('change', () => {
+        togglePrintButton();
+        updateHeaderBold();
+
+        // Sinkronkan status Select All
+        if (!cb.checked) {
+            selectAll.checked = false;
+        } else if (Array.from(checkboxes).every(cb => cb.checked)) {
+            selectAll.checked = true;
+        }
+    }));
 </script>
+

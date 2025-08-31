@@ -38,12 +38,6 @@ class AnggotaKelas extends Model
     }
 
 
-    // Relasi KTSP
-    public function ktsp_nilai_absen(): HasOne
-    {
-        return $this->hasOne(NilaiAbsen::class);
-    }
-
     public function ktsp_nilai_setoran(): HasOne
     {
         return $this->hasOne(NilaiSetoran::class);
@@ -52,11 +46,6 @@ class AnggotaKelas extends Model
     public function nilai_uas(): HasOne
     {
         return $this->hasOne(NilaiUas::class);
-    }
-
-    public function anggota_kelas(): HasOne
-    {
-        return $this->hasOne(AnggotaKelas::class);
     }
 
     public function nilai_akhir_raport(): HasMany

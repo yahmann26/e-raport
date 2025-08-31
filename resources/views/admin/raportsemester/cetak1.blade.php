@@ -17,7 +17,7 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            /* border-collapse: collapse; */
             margin-top: 15px;
         }
 
@@ -196,12 +196,61 @@
                 <td colspan="2" style="border-right: none;">Peringkat ke</td>
                 <td style="border-left: none; border-right: none;">{{ $peringkat }}</td>
                 <td style="border-left: none; border-right: none;">dari</td>
-                <td style="border-left: none;">{{ $jumlah_santri }}</td>
-                <td style="border-left: none;">santri</td>
+                <td style="border-left: none; border-right: none;">{{ $jumlah_santri }}</td>
+                <td style="border-left: none; border-right: none;">Santri</td>
             </tr>
 
+            {{-- Ekstrakulikuler --}}
+            <tr>
+                <td colspan="2">Kegiatan Ekstrakulikuler</td>
+                <td colspan="3">1. Kegiatan Ekstrakulikuler</td>
+                <td></td>
+            </tr>
 
+            {{-- Kepribadian --}}
+            <tr>
+                <td colspan="2" rowspan="3" style="text-align: center">Kepribadian</td>
+                <td colspan="3">1. Kelakuan</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3">2. Kerajinan</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3">3. Kerapian</td>
+                <td></td>
+            </tr>
+
+            {{-- ketidakhadiran --}}
+            <tr>
+                <td colspan="2" rowspan="3" style="text-align: center">Ketidakhadiran</td>
+                <td colspan="3">1. Sakit</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3">2. Ijin</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3">3. Alpha</td>
+                <td></td>
+            </tr>
+
+             {{-- Catatan Ortu --}}
+            <tr>
+                <td colspan="6">Catatan Untuk Orang Tua atau Wali :</td>
+                {{-- <td colspan="2">1. Kegiatan Ekstrakulikuler</td> --}}
+            </tr>
         </tbody>
+    </table>
+
+    <table>
+            <tr>
+                <td colspan="6" style="border: none">{{ $tanggal_raport->tempat_penerbitan }}, {{ \Carbon\Carbon::parse($tanggal_raport->tanggal_pembagian)->translatedFormat('d F Y') }}
+
+</td>
+            </tr>   
     </table>
 
 </body>

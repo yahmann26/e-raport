@@ -154,7 +154,7 @@
                                                 <td>{{ $anggota->santri->nis }}</td>
                                                 <td>{{ $anggota->santri->nisn }}</td>
                                                 <td>{{ $anggota->santri->nama_lengkap }}</td>
-                                                <td>{{ $anggota->santri->tanggal_lahir }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($anggota->santri->tanggal_lahir)->translatedFormat('d F Y') }}</td>
                                                 <td>{{ $anggota->santri->jenis_kelamin }}</td>
                                                 <td>
                                                     @if ($anggota->pendaftaran == 1)
@@ -164,7 +164,7 @@
                                                     @elseif ($anggota->pendaftaran == 3)
                                                         Naik Kelas
                                                     @elseif ($anggota->pendaftaran == 4)
-                                                        Naik Kelas
+                                                        Lanjutan Semester
                                                     @elseif ($anggota->pendaftaran == 5)
                                                         Mengulang
                                                     @endif

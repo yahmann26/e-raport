@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Guru\DashboardController as GuruDasboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDasboardController;
 use App\Http\Controllers\Guru\BobotPenilaianController as GuruBobotPenilaianController;
+
 Route::get('/unauthorized', function () {
     $title = 'Unauthorized';
     return view('errorpage.401', compact('title'));
@@ -42,7 +43,7 @@ Route::middleware('isAdmin', 'verified')->prefix('admin')->group(function () {
     Route::put('profile/{id}', [AdminProfileController::class, 'update'])->name('admin.updateProfile');
     Route::get('password', [AdminProfileController::class, 'password'])->name('admin.password');
     Route::put('password', [AdminProfileController::class, 'password'])->name('admin.password');
-    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
     //user
     Route::resource('user', UserController::class)->only(['index', 'store', 'update']);
@@ -79,7 +80,8 @@ Route::middleware('isAdmin', 'verified')->prefix('admin')->group(function () {
     Route::resource('mapel', MapelController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::get('pembelajaran/export', [PembelajaranController::class, 'export'])->name('pembelajaran.export');
-    Route::post('pembelajaran/settings', [PembelajaranController::class, 'settings'])->name('pembelajaran.settings');
+    Route::get('/pembelajaran/settings', [PembelajaranController::class, 'showSettings'])->name('pembelajaran.settings.show');
+    Route::post('/pembelajaran/settings', [PembelajaranController::class, 'processSettings'])->name('pembelajaran.settings.process');
     Route::resource('pembelajaran', PembelajaranController::class)->only(['index', 'store']);
 
     //mapping mapel
@@ -90,14 +92,12 @@ Route::middleware('isAdmin', 'verified')->prefix('admin')->group(function () {
     Route::resource('statuspenilaian', StatusPenilaianController::class)->only(['index', 'store']);
     Route::resource('pengelolaannilai', PengelolaanNilaiController::class)->only(['index', 'store']);
 
-    Route::resource('kehadiran', AdminKehadiranSantriController::class)->only(['index','create', 'store']);
-    Route::resource('leger', AdminLegerSantriController::class)->only(['index','show', 'store']);
+    Route::resource('kehadiran', AdminKehadiranSantriController::class)->only(['index', 'create', 'store']);
+    Route::resource('leger', AdminLegerSantriController::class)->only(['index', 'show', 'store']);
+    Route::get('leger/cetak/{kelas_id}', [AdminLegerSantriController::class, 'cetak'])->name('leger.cetak');
     Route::resource('nilairaport', AdminNilaiRaportSemesterSantriController::class)->only(['index', 'store']);
     Route::resource('cetakraport', CetakRaportSemesterSantriController::class)->only(['index', 'store', 'show']);
     Route::post('cetakraport/bulk', [CetakRaportSemesterSantriController::class, 'bulk'])->name('cetakraport.bulk');
-
-
-
 });
 
 

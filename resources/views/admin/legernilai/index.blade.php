@@ -51,7 +51,7 @@
               </div>
 
               <div>
-                <a href="{{ route('leger.show', $kelas->id) }}" class="btn btn-primary float-right"><i class="fas fa-download"></i> Download Leger</a>
+                <a href="{{ route('leger.cetak', $kelas->id) }}" class="btn btn-primary float-right"><i class="fas fa-download"></i> Download Leger</a>
               </div>
 
               <div class="table-responsive pt-2">

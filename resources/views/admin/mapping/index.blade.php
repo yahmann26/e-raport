@@ -52,7 +52,7 @@
                       <?php $no++; ?>
                       <tr>
                         <td class="text-center">{{$no}}</td>
-                        <td>{{$mapel->nama_mapel}}
+                        <td>{{$mapel->nama_mapel}} - {{$mapel->ringkasan_mapel}}
                           <input type="hidden" name="mapel_id[]" value="{{$mapel->id}}">
                         </td>
                         <td>

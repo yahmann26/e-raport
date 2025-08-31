@@ -54,7 +54,7 @@
                     <div class="form-group row">
                       <label for="kelas_id" class="col-sm-2 col-form-label">Kelas</label>
                       <div class="col-sm-10">
-                        <form action="{{ route('pembelajaran.settings') }}" method="POST">
+                        <form action="{{ route('pembelajaran.settings.show') }}" method="POST">
                           @csrf
                           <select class="form-control select2" name="kelas_id" style="width: 100%;" required onchange="this.form.submit();">
                             <option value="">-- Pilih Kelas --</option>

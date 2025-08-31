@@ -7,7 +7,7 @@ use App\Models\AnggotaKelas;
 use App\Models\Guru;
 use App\Models\Kelas;
 use App\Models\Mapel;
-use App\Models\santri;
+use App\Models\Santri;
 use App\Models\Tapel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -27,7 +27,7 @@ class KelasController extends Controller
         $title = 'Data Kelas';
         $data_kelas = Kelas::where('tapel_id', $tapel->id)->orderBy('tingkatan_kelas', 'ASC')->get();
         foreach ($data_kelas as $kelas) {
-            $jumlah_anggota = santri::where('kelas_id', $kelas->id)->count();
+            $jumlah_anggota = Santri::where('kelas_id', $kelas->id)->count();
             $kelas->jumlah_anggota = $jumlah_anggota;
         }
         $data_guru = Guru::orderBy('nama_lengkap', 'ASC')->get();
@@ -48,7 +48,9 @@ class KelasController extends Controller
             'guru_id' => 'required',
         ]);
         if ($validator->fails()) {
-            return back()->with('toast_error', $validator->messages()->all()[0])->withInput();
+            return back()
+                ->with('toast_error', $validator->messages()->all()[0])
+                ->withInput();
         } else {
             $tapel = Tapel::findorfail(session()->get('tapel_id'));
             $kelas = new Kelas([
@@ -76,10 +78,7 @@ class KelasController extends Controller
         $tapel_id = session('tapel_id');
 
         // Anggota kelas pada kelas ini
-        $anggota_kelas = AnggotaKelas::join('santri', 'anggota_kelas.santri_id', '=', 'santri.id')
-            ->orderBy('santri.nama_lengkap', 'ASC')
-            ->where('anggota_kelas.kelas_id', $id)
-            ->get();
+        $anggota_kelas = AnggotaKelas::join('santri', 'anggota_kelas.santri_id', '=', 'santri.id')->orderBy('santri.nama_lengkap', 'ASC')->where('anggota_kelas.kelas_id', $id)->get();
 
         // Santri yang status aktif (1), belum punya kelas untuk tapel ini
         // Artinya belum ada di anggota_kelas pada tapel_id ini
@@ -93,18 +92,13 @@ class KelasController extends Controller
 
         // Cari kelas sebelumnya untuk tiap santri belum masuk kelas
         foreach ($santri_belum_masuk_kelas as $belum_masuk_kelas) {
-            $kelas_sebelumnya = AnggotaKelas::where('santri_id', $belum_masuk_kelas->id)
-                ->orderBy('id', 'DESC')
-                ->first();
+            $kelas_sebelumnya = AnggotaKelas::where('santri_id', $belum_masuk_kelas->id)->orderBy('id', 'DESC')->first();
 
-            $belum_masuk_kelas->kelas_sebelumhya = $kelas_sebelumnya
-                ? $kelas_sebelumnya->kelas->nama_kelas
-                : null;
+            $belum_masuk_kelas->kelas_sebelumhya = $kelas_sebelumnya ? $kelas_sebelumnya->kelas->nama_kelas : null;
         }
 
         return view('admin.kelas.show', compact('title', 'kelas', 'anggota_kelas', 'santri_belum_masuk_kelas'));
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -120,7 +114,9 @@ class KelasController extends Controller
             'guru_id' => 'required',
         ]);
         if ($validator->fails()) {
-            return back()->with('toast_error', $validator->messages()->all()[0])->withInput();
+            return back()
+                ->with('toast_error', $validator->messages()->all()[0])
+                ->withInput();
         } else {
             $kelas = Kelas::findorfail($id);
             $data_kelas = [
@@ -162,7 +158,7 @@ class KelasController extends Controller
         // Ambil kelas dari ID kelas yang dikirim
         $kelas = Kelas::findOrFail($request->kelas_id);
 
-        $tapel_id = $kelas->tapel_id;  // ambil tapel_id dari kelas
+        $tapel_id = $kelas->tapel_id; // ambil tapel_id dari kelas
 
         $santri_id = $request->input('santri_id');
         $insert_data = [];
@@ -189,8 +185,7 @@ class KelasController extends Controller
         if (!empty($insert_data)) {
             AnggotaKelas::insert($insert_data);
 
-            santri::whereIn('id', array_column($insert_data, 'santri_id'))
-                ->update(['kelas_id' => $request->kelas_id]);
+            santri::whereIn('id', array_column($insert_data, 'santri_id'))->update(['kelas_id' => $request->kelas_id]);
 
             return back()->with('toast_success', 'Anggota kelas berhasil ditambahkan');
         } else {
@@ -198,13 +193,11 @@ class KelasController extends Controller
         }
     }
 
-
-
     public function delete_anggota($id)
     {
         try {
             $anggota_kelas = AnggotaKelas::findorfail($id);
-            $santri = santri::findorfail($anggota_kelas->santri_id);
+            $santri = Santri::findorfail($anggota_kelas->santri_id);
 
             $update_kelas_id = [
                 'kelas_id' => null,

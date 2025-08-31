@@ -21,7 +21,7 @@ class Santri extends Model
         'tempat_lahir',
         'tanggal_lahir',
         'jenis_kelamin',
-        'agama',
+        // 'agama',
         'status_dalam_keluarga',
         'anak_ke',
         'alamat',

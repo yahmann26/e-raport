@@ -151,15 +151,15 @@
                       <td class="text-center">{{$penilaian->kelas->nama_kelas}}</td>
 
                       @if($penilaian->jumlah_anggota_kelas == 0)
-                      <td class="text-danger text-center"><b>0</b> Siswa</td>
+                      <td class="text-danger text-center"><b>0</b> Santri</td>
                       @else
-                      <td class="text-success text-center"><b>{{$penilaian->jumlah_anggota_kelas}}</b> Siswa</td>
+                      <td class="text-success text-center"><b>{{$penilaian->jumlah_anggota_kelas}}</b> Santri</td>
                       @endif
 
                       @if($penilaian->jumlah_telah_dinilai == 0)
-                      <td class="text-danger text-center"><b>0</b> Siswa</td>
+                      <td class="text-danger text-center"><b>0</b> Santri</td>
                       @else
-                      <td class="text-success text-center"><b>{{$penilaian->jumlah_telah_dinilai}}</b> Siswa</td>
+                      <td class="text-success text-center"><b>{{$penilaian->jumlah_telah_dinilai}}</b> Santri</td>
                       @endif
 
                       @if($penilaian->jumlah_anggota_kelas != 0)

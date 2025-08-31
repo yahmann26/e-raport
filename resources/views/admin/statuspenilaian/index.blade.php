@@ -99,7 +99,7 @@
                       <td class="text-center bg-success"><i class="fas fa-check"></i></td>
                       @endif
 
-                      @if($pembelajaran->uts_uas == 0)
+                      @if($pembelajaran->nilai_setoran == 0)
                       <td class="text-center bg-danger"><i class="fas fa-times"></i></td>
                       @else
                       <td class="text-center bg-success"><i class="fas fa-check"></i></td>
