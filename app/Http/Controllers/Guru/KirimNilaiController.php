@@ -79,7 +79,7 @@ class KirimNilaiController extends Controller
                     $nilai_setoran = NilaiSetoran::where('anggota_kelas_id', $anggota_kelas->id)->where('pembelajaran_id', $pembelajaran->id)->first();
                     $nilai_uas = NilaiUas::where('anggota_kelas_id', $anggota_kelas->id)->where('pembelajaran_id', $pembelajaran->id)->first();
 
-                    $nilai_akhir_raport = (($nilai_absen->nilai * $bobot_penilaian->bobot_absen) + ($nilai_setoran->nilai * $bobot_penilaian->bobot_setoran) + ($nilai_uas->nilai * $bobot_penilaian->bobot_uas)) / ($bobot_penilaian->bobot_absen + $bobot_penilaian->bobot_setoran + $bobot_penilaian->bobot_uas) / 10;
+                    $nilai_akhir_raport = (($nilai_absen->nilai * $bobot_penilaian->bobot_absen) + ($nilai_setoran->nilai * $bobot_penilaian->bobot_setoran) + ($nilai_uas->nilai * $bobot_penilaian->bobot_uas)) / ($bobot_penilaian->bobot_absen + $bobot_penilaian->bobot_setoran + $bobot_penilaian->bobot_uas);
 
                     $anggota_kelas->nilai_akhir = number_format($nilai_akhir_raport, 1);
                 }
@@ -110,37 +110,5 @@ class KirimNilaiController extends Controller
             }
         }
         return redirect('guru/kirimnilai')->with('toast_success', 'Nilai akhir raport berhasil dikirim');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

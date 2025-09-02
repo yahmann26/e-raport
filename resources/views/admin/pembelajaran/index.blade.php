@@ -103,7 +103,7 @@
                         @endif
                       </td>
                       <td>{{$pembelajaran->kelas->nama_kelas}}</td>
-                      <td>{{$pembelajaran->mapel->nama_mapel}}</td>
+                      <td>{{$pembelajaran->mapel->nama_mapel}} - {{$pembelajaran->mapel->ringkasan_mapel}}</td>
                       <td>{{$pembelajaran->guru->nama_lengkap}}, {{$pembelajaran->guru->gelar}}</td>
                     </tr>
                     @endforeach

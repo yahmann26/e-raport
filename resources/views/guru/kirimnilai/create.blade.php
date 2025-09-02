@@ -42,7 +42,7 @@
                       <select class="form-control select2" name="pembelajaran_id" style="width: 100%;" required onchange="this.form.submit();">
                         <option value="" disabled>-- Pilih Pembelajaran --</option>
                         @foreach($data_pembelajaran as $mapel)
-                        <option value="{{$mapel->id}}" @if($mapel->id == $pembelajaran->id) selected @endif>{{$mapel->mapel->nama_mapel}} {{$mapel->kelas->nama_kelas}}</option>
+                        <option value="{{$mapel->id}}" @if($mapel->id == $pembelajaran->id) selected @endif>{{$mapel->mapel->ringkasan_mapel}} {{$mapel->kelas->nama_kelas}}</option>
                         @endforeach
                       </select>
                     </div>

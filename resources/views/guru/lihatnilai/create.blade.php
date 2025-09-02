@@ -45,7 +45,7 @@
                                                 @foreach ($data_pembelajaran as $mapel)
                                                     <option value="{{ $mapel->id }}"
                                                         @if ($mapel->id == $pembelajaran->id) selected @endif>
-                                                        {{ $mapel->mapel->nama_mapel }} - {{ $mapel->kelas->nama_kelas }}
+                                                        {{ $mapel->mapel->ringkasan_mapel }} - {{ $mapel->kelas->nama_kelas }}
                                                     </option>
                                                 @endforeach
                                             </select>

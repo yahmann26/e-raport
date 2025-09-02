@@ -2,39 +2,64 @@
 function terbilang($angka)
 {
     $angka = abs($angka);
-    $baca = array("", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas");
-
+    $baca = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
     $hasil = "";
 
-    // Pisahkan angka menjadi integer dan desimal
+    // Pisahkan angka menjadi bilangan bulat dan desimal (maks 2 digit desimal)
     $pecahan = explode('.', number_format($angka, 2, '.', ''));
 
-    // Bagian bulat
+    // Bagian bilangan bulat
     $bilangan = (int)$pecahan[0];
+
     if ($bilangan < 12) {
         $hasil .= " " . $baca[$bilangan];
-    } else if ($bilangan < 20) {
+    } elseif ($bilangan < 20) {
         $hasil .= terbilang($bilangan - 10) . " Belas";
-    } else if ($bilangan < 100) {
-        $hasil .= terbilang($bilangan / 10) . " Puluh" . terbilang($bilangan % 10);
-    } else if ($bilangan < 200) {
-        $hasil .= " Seratus" . terbilang($bilangan - 100);
-    } else if ($bilangan < 1000) {
-        $hasil .= terbilang($bilangan / 100) . " Ratus" . terbilang($bilangan % 100);
-    } else if ($bilangan < 2000) {
-        $hasil .= " Seribu" . terbilang($bilangan - 1000);
-    } else if ($bilangan < 1000000) {
-        $hasil .= terbilang($bilangan / 1000) . " Ribu" . terbilang($bilangan % 1000);
-    } else if ($bilangan < 1000000000) {
-        $hasil .= terbilang($bilangan / 1000000) . " Juta" . terbilang($bilangan % 1000000);
+    } elseif ($bilangan < 100) {
+        $hasil .= terbilang(floor($bilangan / 10)) . " Puluh";
+        $sisa = $bilangan % 10;
+        if ($sisa != 0) {
+            $hasil .= " " . terbilang($sisa);
+        }
+    } elseif ($bilangan < 200) {
+        $hasil .= " Seratus";
+        $sisa = $bilangan - 100;
+        if ($sisa != 0) {
+            $hasil .= " " . terbilang($sisa);
+        }
+    } elseif ($bilangan < 1000) {
+        $hasil .= terbilang(floor($bilangan / 100)) . " Ratus";
+        $sisa = $bilangan % 100;
+        if ($sisa != 0) {
+            $hasil .= " " . terbilang($sisa);
+        }
+    } elseif ($bilangan < 2000) {
+        $hasil .= " Seribu";
+        $sisa = $bilangan - 1000;
+        if ($sisa != 0) {
+            $hasil .= " " . terbilang($sisa);
+        }
+    } elseif ($bilangan < 1000000) {
+        $hasil .= terbilang(floor($bilangan / 1000)) . " Ribu";
+        $sisa = $bilangan % 1000;
+        if ($sisa != 0) {
+            $hasil .= " " . terbilang($sisa);
+        }
+    } elseif ($bilangan < 1000000000) {
+        $hasil .= terbilang(floor($bilangan / 1000000)) . " Juta";
+        $sisa = $bilangan % 1000000;
+        if ($sisa != 0) {
+            $hasil .= " " . terbilang($sisa);
+        }
     }
 
     // Bagian desimal
     if (isset($pecahan[1]) && (int)$pecahan[1] > 0) {
         $hasil .= " Koma";
-        $digits = str_split(rtrim($pecahan[1], '0')); // hapus nol di akhir desimal
+        $desimal = rtrim($pecahan[1], '0'); // hilangkan nol di akhir
+        $digits = str_split($desimal);
         foreach ($digits as $digit) {
-            $hasil .= " " . $baca[$digit];
+            $hasil .= " " . $baca[(int)$digit];
         }
     }
 

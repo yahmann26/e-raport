@@ -80,7 +80,6 @@
                                                     <th>Mata Pelajaran</th>
                                                     <th>Guru</th>
                                                     <th>Status</th>
-                                                    <th>Aksi</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -117,13 +116,6 @@
                                                                 <option value="0">Tidak Aktif</option>
                                                                 <option value="1" selected>Aktif</option>
                                                             </select>
-                                                        </td>
-                                                        <td>
-                                                            <button type="button"
-                                                                class="btn btn-sm btn-danger remove-row"
-                                                                data-bs-toggle="tooltip" title="Hapus">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -162,13 +154,6 @@
                                                                 <option value="0" selected>Tidak Aktif</option>
                                                                 <option value="1">Aktif</option>
                                                             </select>
-                                                        </td>
-                                                        <td>
-                                                            <button type="button"
-                                                                class="btn btn-sm btn-danger remove-row"
-                                                                data-bs-toggle="tooltip" title="Hapus">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
                                                         </td>
                                                     </tr>
                                                 @endforeach

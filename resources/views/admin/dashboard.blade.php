@@ -26,8 +26,8 @@
         <div class="container-fluid">
 
             <!-- Info -->
-            {{-- <div class="callout callout-success">
-          <h5>{{ $sekolah ? $sekolah->nama_sekolah : 'Nama Sekolah Tidak Tersedia' }}</h5>
+            <div class="callout callout-success">
+          <h5>{{ $pondok ? $pondok->nama_pondok : 'Nama pondok Tidak Tersedia' }}</h5>
           <p>
               Tahun Pelajaran {{ $tapel ? $tapel->tahun_pelajaran : '-' }}
               @if ($tapel && $tapel->semester == 1)
@@ -38,7 +38,7 @@
                   Semester Tidak Diketahui
               @endif
           </p>
-      </div> --}}
+      </div>
             <!-- End Info  -->
 
             <!-- Info boxes -->
@@ -62,10 +62,10 @@
                     <div class="info-box mb-3">
                         <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-users"></i></span>
 
-                        {{-- <div class="info-box-content">
-              <span class="info-box-text">Jumlah Siswa</span>
-              <span class="info-box-number">{{$jumlah_siswa}}</span>
-            </div> --}}
+                        <div class="info-box-content">
+                            <span class="info-box-text">Jumlah Santri</span>
+                            <span class="info-box-number">{{ $jumlah_santri }}</span>
+                        </div>
                         <!-- /.info-box-content -->
                     </div>
                     <!-- /.info-box -->
@@ -81,7 +81,7 @@
 
                         <div class="info-box-content">
                             <span class="info-box-text">Jumlah Kelas</span>
-                            {{-- <span class="info-box-number">{{$jumlah_kelas}}</span> --}}
+                            <span class="info-box-number">{{ $jumlah_kelas }}</span>
                         </div>
                         <!-- /.info-box-content -->
                     </div>
@@ -92,10 +92,10 @@
                     <div class="info-box mb-3">
                         <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-book-reader "></i></span>
 
-                        {{-- <div class="info-box-content">
-              <span class="info-box-text">Jumlah Ekstrakulikuler</span>
-              <span class="info-box-number">{{$jumlah_ekstrakulikuler}}</span>
-            </div> --}}
+                        <div class="info-box-content">
+                            <span class="info-box-text">Jumlah Mapel</span>
+                            <span class="info-box-number">{{ $jumlah_mapel }}</span>
+                        </div>
                         <!-- /.info-box-content -->
                     </div>
                     <!-- /.info-box -->
@@ -196,7 +196,7 @@
                                                 <img src="assets/dist/img/avatar/{{ optional($riwayat_login->user->siswa)->avatar ?? 'default.png' }}"
                                                     alt="Avatar" class="img-size-50">
                                             @elseif($riwayat_login->user->role == 4)
-                                                <img src="assets/dist/img/avatar/{{ optional($riwayat_login->user->kepala_sekolah)->avatar ?? 'default.png' }}"
+                                                <img src="assets/dist/img/avatar/{{ optional($riwayat_login->user->kepala_pondok)->avatar ?? 'default.png' }}"
                                                     alt="Avatar" class="img-size-50">
                                             @elseif($riwayat_login->user->role == 5)
                                                 <img src="assets/dist/img/avatar/{{ optional($riwayat_login->user->wakilkurikulum)->avatar ?? 'default.png' }}"
@@ -216,7 +216,7 @@
                                                 @elseif($riwayat_login->user->role == 3)
                                                     {{ optional($riwayat_login->user->siswa)->nama_lengkap }}
                                                 @elseif($riwayat_login->user->role == 4)
-                                                    {{ optional($riwayat_login->user->kepala_sekolah)->nama_lengkap }}
+                                                    {{ optional($riwayat_login->user->kepala_pondok)->nama_lengkap }}
                                                 @elseif($riwayat_login->user->role == 5)
                                                     {{ optional($riwayat_login->user->wakilkurikulum)->nama_lengkap }}
                                                 @else
@@ -238,7 +238,7 @@
                                                 @elseif($riwayat_login->user->role == 3)
                                                     Siswa
                                                 @elseif($riwayat_login->user->role == 4)
-                                                    Kepala Sekolah
+                                                    Kepala pondok
                                                 @elseif($riwayat_login->user->role == 5)
                                                     Wakil Kurikulum
                                                 @else

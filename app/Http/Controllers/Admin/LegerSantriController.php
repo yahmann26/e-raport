@@ -11,6 +11,7 @@ use App\Models\Pembelajaran;
 use Illuminate\Http\Request;
 use App\Models\NilaiAkhirRaport;
 use App\Http\Controllers\Controller;
+use App\Models\TglRaport;
 use Mpdf\Mpdf;
 use Illuminate\Support\Facades\Response;
 
@@ -21,7 +22,7 @@ class LegerSantriController extends Controller
      */
     public function index()
     {
-        $title = 'Leger Nilai Siswa';
+        $title = 'Leger Nilai sant';
         $data_kelas = Kelas::where('tapel_id', session()->get('tapel_id'))->get();
         return view('admin.legernilai.pilihkelas', compact('title', 'data_kelas'));
     }
@@ -39,88 +40,39 @@ class LegerSantriController extends Controller
      */
     public function store(Request $request)
     {
-        $title = 'Leger Nilai Siswa';
+        $title = 'Leger Nilai sant';
         $tapel = Tapel::findOrFail(session()->get('tapel_id'));
         $kelas = Kelas::findOrFail($request->kelas_id);
         $data_kelas = Kelas::where('tapel_id', session()->get('tapel_id'))->get();
 
         $data_id_mapel_semester_ini = Mapel::where('tapel_id', $tapel->id)->pluck('id');
-        $data_id_mapel_wajib = MappingMapel::whereIn('mapel_id', $data_id_mapel_semester_ini)->where('kelompok', 1)->pluck('mapel_id');
-        $data_id_mapel_pilihan = MappingMapel::whereIn('mapel_id', $data_id_mapel_semester_ini)->where('kelompok', 2)->pluck('mapel_id');
-        $data_id_mapel_muatan_lokal = MappingMapel::whereIn('mapel_id', $data_id_mapel_semester_ini)->where('kelompok', 3)->pluck('mapel_id');
 
         $data_id_pembelajaran_all = Pembelajaran::where('kelas_id', $kelas->id)->pluck('id');
-        $data_id_pembelajaran_mapel_wajib = Pembelajaran::where('kelas_id', $kelas->id)->whereIn('mapel_id', $data_id_mapel_wajib)->pluck('id');
-        $data_id_pembelajaran_mapel_pilihan = Pembelajaran::where('kelas_id', $kelas->id)->whereIn('mapel_id', $data_id_mapel_pilihan)->pluck('id');
-        $data_id_pembelajaran_mapel_muatan_lokal = Pembelajaran::where('kelas_id', $kelas->id)->whereIn('mapel_id', $data_id_mapel_muatan_lokal)->pluck('id');
 
-        // Fix group by with subquery to get the latest nilai per pembelajaran
-        $id_nilai_mapel_wajib = NilaiAkhirRaport::selectRaw('MAX(id) as id')
-            ->whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_wajib)
+        $id_nilai_mapel = NilaiAkhirRaport::selectRaw('MAX(id) as id')
+            ->whereIn('pembelajaran_id', $data_id_pembelajaran_all)
             ->groupBy('pembelajaran_id')
             ->pluck('id');
 
-        $data_mapel_wajib = NilaiAkhirRaport::whereIn('id', $id_nilai_mapel_wajib)->get();
-
-        $id_nilai_mapel_pilihan = NilaiAkhirRaport::selectRaw('MAX(id) as id')
-            ->whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_pilihan)
-            ->groupBy('pembelajaran_id')
-            ->pluck('id');
-
-        $data_mapel_pilihan = NilaiAkhirRaport::whereIn('id', $id_nilai_mapel_pilihan)->get();
-
-        $id_nilai_mapel_muatan_lokal = NilaiAkhirRaport::selectRaw('MAX(id) as id')
-            ->whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_muatan_lokal)
-            ->groupBy('pembelajaran_id')
-            ->pluck('id');
-
-        $data_mapel_muatan_lokal = NilaiAkhirRaport::whereIn('id', $id_nilai_mapel_muatan_lokal)->get();
-
-        // $data_ekstrakulikuler = Ekstrakulikuler::where('tapel_id', $tapel->id)->get();
-        // $count_ekstrakulikuler = count($data_ekstrakulikuler);
+        $data_mapel = NilaiAkhirRaport::whereIn('id', $id_nilai_mapel)->get();
 
         $data_anggota_kelas = AnggotaKelas::where('kelas_id', $kelas->id)->get();
 
         foreach ($data_anggota_kelas as $anggota_kelas) {
-            $data_nilai_mapel_wajib = NilaiAkhirRaport::whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_wajib)
+            $data_nilai_mapel = NilaiAkhirRaport::whereIn('pembelajaran_id', $data_id_pembelajaran_all)
                 ->where('anggota_kelas_id', $anggota_kelas->id)
                 ->get();
 
-            $data_nilai_mapel_pilihan = NilaiAkhirRaport::whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_pilihan)
-                ->where('anggota_kelas_id', $anggota_kelas->id)
-                ->get();
-
-            $data_nilai_mapel_muatan_lokal = NilaiAkhirRaport::whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_muatan_lokal)
-                ->where('anggota_kelas_id', $anggota_kelas->id)
-                ->get();
-
-            $anggota_kelas->data_nilai_mapel_wajib = $data_nilai_mapel_wajib;
-            $anggota_kelas->data_nilai_mapel_pilihan = $data_nilai_mapel_pilihan;
-            $anggota_kelas->data_nilai_mapel_muatan_lokal = $data_nilai_mapel_muatan_lokal;
+            $anggota_kelas->data_nilai_mapel = $data_nilai_mapel;
 
             $jumlah_nilai = NilaiAkhirRaport::where('anggota_kelas_id', $anggota_kelas->id)->sum('nilai_akhir');
             $rt_nilai = NilaiAkhirRaport::where('anggota_kelas_id', $anggota_kelas->id)->avg('nilai_akhir');
 
             $anggota_kelas->jumlah_nilai = round($jumlah_nilai, 1);
             $anggota_kelas->rt_nilai = round($rt_nilai, 1);
-
-            // Uncomment dan sesuaikan jika ekstrakurikuler diaktifkan
-            // $anggota_kelas->data_nilai_ekstrakulikuler = Ekstrakulikuler::where('tapel_id', $tapel->id)->get();
-            // foreach ($anggota_kelas->data_nilai_ekstrakulikuler as $data_nilai_ekstrakulikuler) {
-            //     $cek_anggota_ekstra = AnggotaEkstrakulikuler::where('ekstrakulikuler_id', $data_nilai_ekstrakulikuler->id)
-            //         ->where('anggota_kelas_id', $anggota_kelas->id)
-            //         ->first();
-            //     if (is_null($cek_anggota_ekstra)) {
-            //         $data_nilai_ekstrakulikuler->nilai = '-';
-            //     } else {
-            //         $cek_nilai_ekstra = NilaiEkstrakulikuler::where('ekstrakulikuler_id', $data_nilai_ekstrakulikuler->id)
-            //             ->where('anggota_ekstrakulikuler_id', $cek_anggota_ekstra->id)
-            //             ->first();
-            //         $data_nilai_ekstrakulikuler->nilai = $cek_nilai_ekstra ? $cek_nilai_ekstra->nilai : '-';
-            //     }
-            // }
         }
 
+        // Hitung peringkat berdasarkan rt_nilai tertinggi
         $data_anggota_kelas = $data_anggota_kelas->sortByDesc('rt_nilai')->values();
 
         $peringkat = 1;
@@ -140,129 +92,100 @@ class LegerSantriController extends Controller
             'title',
             'kelas',
             'data_kelas',
-            'data_mapel_wajib',
-            'data_mapel_pilihan',
-            'data_mapel_muatan_lokal',
-            // 'data_ekstrakulikuler',
-            // 'count_ekstrakulikuler',
+            'data_mapel',
             'data_anggota_kelas'
         ));
     }
 
+    public function cetak(Request $request, $kelas_id)
+    {
+        $title = 'Leger Nilai Santri';
+        $tapel = Tapel::findOrFail(session()->get('tapel_id'));
+        $kelas = Kelas::findOrFail($kelas_id);
+        $data_kelas = Kelas::where('tapel_id', session()->get('tapel_id'))->get();
 
-    /**
-     * Display the specified resource.
-     */
-    
+        // Ambil semua id mapel semester ini
+        $data_id_mapel_semester_ini = Mapel::where('tapel_id', $tapel->id)->pluck('id');
 
-     
-     public function cetak(Request $request, $kelas_id)
-     {
-         $title = 'Leger Nilai Siswa';
-         $tapel = Tapel::findOrFail(session()->get('tapel_id'));
-         $kelas = Kelas::findOrFail($kelas_id);
-         $data_kelas = Kelas::where('tapel_id', session()->get('tapel_id'))->get();
-     
-         // Query data sama seperti method store
-         $data_id_mapel_semester_ini = Mapel::where('tapel_id', $tapel->id)->pluck('id');
-         $data_id_mapel_wajib = MappingMapel::whereIn('mapel_id', $data_id_mapel_semester_ini)->where('kelompok', 1)->pluck('mapel_id');
-         $data_id_mapel_pilihan = MappingMapel::whereIn('mapel_id', $data_id_mapel_semester_ini)->where('kelompok', 2)->pluck('mapel_id');
-         $data_id_mapel_muatan_lokal = MappingMapel::whereIn('mapel_id', $data_id_mapel_semester_ini)->where('kelompok', 3)->pluck('mapel_id');
-     
-         $data_id_pembelajaran_all = Pembelajaran::where('kelas_id', $kelas->id)->pluck('id');
-         $data_id_pembelajaran_mapel_wajib = Pembelajaran::where('kelas_id', $kelas->id)->whereIn('mapel_id', $data_id_mapel_wajib)->pluck('id');
-         $data_id_pembelajaran_mapel_pilihan = Pembelajaran::where('kelas_id', $kelas->id)->whereIn('mapel_id', $data_id_mapel_pilihan)->pluck('id');
-         $data_id_pembelajaran_mapel_muatan_lokal = Pembelajaran::where('kelas_id', $kelas->id)->whereIn('mapel_id', $data_id_mapel_muatan_lokal)->pluck('id');
-     
-         // Fix group by with subquery to get the latest nilai per pembelajaran
-         $id_nilai_mapel_wajib = NilaiAkhirRaport::selectRaw('MAX(id) as id')
-             ->whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_wajib)
-             ->groupBy('pembelajaran_id')
-             ->pluck('id');
-     
-         $data_mapel_wajib = NilaiAkhirRaport::whereIn('id', $id_nilai_mapel_wajib)->get();
-     
-         $id_nilai_mapel_pilihan = NilaiAkhirRaport::selectRaw('MAX(id) as id')
-             ->whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_pilihan)
-             ->groupBy('pembelajaran_id')
-             ->pluck('id');
-     
-         $data_mapel_pilihan = NilaiAkhirRaport::whereIn('id', $id_nilai_mapel_pilihan)->get();
-     
-         $id_nilai_mapel_muatan_lokal = NilaiAkhirRaport::selectRaw('MAX(id) as id')
-             ->whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_muatan_lokal)
-             ->groupBy('pembelajaran_id')
-             ->pluck('id');
-     
-         $data_mapel_muatan_lokal = NilaiAkhirRaport::whereIn('id', $id_nilai_mapel_muatan_lokal)->get();
-     
-         $data_anggota_kelas = AnggotaKelas::where('kelas_id', $kelas->id)->get();
-     
-         foreach ($data_anggota_kelas as $anggota_kelas) {
-             $data_nilai_mapel_wajib = NilaiAkhirRaport::whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_wajib)
-                 ->where('anggota_kelas_id', $anggota_kelas->id)
-                 ->get();
-     
-             $data_nilai_mapel_pilihan = NilaiAkhirRaport::whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_pilihan)
-                 ->where('anggota_kelas_id', $anggota_kelas->id)
-                 ->get();
-     
-             $data_nilai_mapel_muatan_lokal = NilaiAkhirRaport::whereIn('pembelajaran_id', $data_id_pembelajaran_mapel_muatan_lokal)
-                 ->where('anggota_kelas_id', $anggota_kelas->id)
-                 ->get();
-     
-             $anggota_kelas->data_nilai_mapel_wajib = $data_nilai_mapel_wajib;
-             $anggota_kelas->data_nilai_mapel_pilihan = $data_nilai_mapel_pilihan;
-             $anggota_kelas->data_nilai_mapel_muatan_lokal = $data_nilai_mapel_muatan_lokal;
-     
-             $jumlah_nilai = NilaiAkhirRaport::where('anggota_kelas_id', $anggota_kelas->id)->sum('nilai_akhir');
-             $rt_nilai = NilaiAkhirRaport::where('anggota_kelas_id', $anggota_kelas->id)->avg('nilai_akhir');
-     
-             $anggota_kelas->jumlah_nilai = round($jumlah_nilai, 1);
-             $anggota_kelas->rt_nilai = round($rt_nilai, 1);
-         }
-     
-         $data_anggota_kelas = $data_anggota_kelas->sortByDesc('rt_nilai')->values();
-     
-         $peringkat = 1;
-         $peringkatSebelumnya = null;
-         $counter = 1;
-     
-         foreach ($data_anggota_kelas as $anggota_kelas) {
-             if ($anggota_kelas->rt_nilai !== $peringkatSebelumnya) {
-                 $peringkat = $counter;
-             }
-             $anggota_kelas->peringkat = $peringkat;
-             $peringkatSebelumnya = $anggota_kelas->rt_nilai;
-             $counter++;
-         }
-     
-         // Render view ke string HTML
-         $html = view('admin.legernilai.cetak', compact(
-             'title',
-             'kelas',
-             'tapel',
-             'data_mapel_wajib',
-             'data_mapel_pilihan',
-             'data_mapel_muatan_lokal',
-             'data_anggota_kelas'
-         ))->render();
-     
-         // Setup mPDF
-         $mpdf = new Mpdf([
-             'mode' => 'utf-8',
-             'format' => 'A4-L', // Landscape orientation
-             'margin_left' => 5,
-             'margin_right' => 5,
-             'margin_top' => 15,
-             'margin_bottom' => 15,
-             'margin_header' => 5,
-             'margin_footer' => 5,
-             'default_font' => 'arial'
-         ]);
-     
-         // Add CSS styling
-         $stylesheet = '
+        // Ambil semua id pembelajaran di kelas ini
+        $data_id_pembelajaran_all = Pembelajaran::where('kelas_id', $kelas->id)->pluck('id');
+
+        // Ambil nilai akhir terakhir dari tiap pembelajaran
+        $id_nilai_mapel = NilaiAkhirRaport::selectRaw('MAX(id) as id')
+            ->whereIn('pembelajaran_id', $data_id_pembelajaran_all)
+            ->groupBy('pembelajaran_id')
+            ->pluck('id');
+
+        $data_mapel = NilaiAkhirRaport::whereIn('id', $id_nilai_mapel)->get();
+
+        // Ambil semua anggota kelas dengan relasi santri
+        $data_anggota_kelas = AnggotaKelas::with('santri', 'kelas.guru')
+            ->where('kelas_id', $kelas->id)
+            ->get();
+
+        $guru = Kelas::with('guru')->findOrFail($kelas->id);
+
+        $tanggal_raport = TglRaport::where('tapel_id', session()->get('tapel_id'))->first();
+
+
+        // Loop setiap anggota kelas untuk mengambil nilai dan hitung total & rata-rata
+        foreach ($data_anggota_kelas as $anggota_kelas) {
+            $data_nilai_mapel = NilaiAkhirRaport::whereIn('pembelajaran_id', $data_id_pembelajaran_all)
+                ->where('anggota_kelas_id', $anggota_kelas->id)
+                ->get();
+
+            $anggota_kelas->data_nilai_mapel = $data_nilai_mapel;
+
+            $jumlah_nilai = $data_nilai_mapel->sum('nilai_akhir');
+            $rt_nilai = $data_nilai_mapel->avg('nilai_akhir');
+
+            $anggota_kelas->jumlah_nilai = round($jumlah_nilai, 1);
+            $anggota_kelas->rt_nilai = round($rt_nilai, 1);
+        }
+
+        // Hitung peringkat berdasarkan rt_nilai tertinggi
+        $data_anggota_kelas = $data_anggota_kelas->sortByDesc('rt_nilai')->values();
+
+        $peringkat = 1;
+        $peringkatSebelumnya = null;
+        $counter = 1;
+
+        foreach ($data_anggota_kelas as $anggota_kelas) {
+            if ($anggota_kelas->rt_nilai !== $peringkatSebelumnya) {
+                $peringkat = $counter;
+            }
+            $anggota_kelas->peringkat = $peringkat;
+            $peringkatSebelumnya = $anggota_kelas->rt_nilai;
+            $counter++;
+        }
+
+        // Render view ke HTML
+        $html = view('admin.legernilai.cetak', compact(
+            'title',
+            'kelas',
+            'tapel',
+            'guru',
+            'tanggal_raport',
+            'data_mapel',
+            'data_anggota_kelas'
+        ))->render();
+
+        // Setup mPDF
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => [330, 210], // Landscape F4 (Folio)
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'margin_top' => 1,
+            'margin_bottom' => 1,
+            'margin_header' => 1,
+            'margin_footer' => 1,
+            'default_font' => 'arial',
+            'tempDir' => storage_path('app/mpdf-temp'), 
+        ]);
+
+        // Tambahkan CSS
+        $stylesheet = '
              <style>
                  body {
                      font-family: Arial, sans-serif;
@@ -307,16 +230,13 @@ class LegerSantriController extends Controller
                  }
              </style>
          ';
-         
-         $mpdf->WriteHTML($stylesheet, 1);
-         $mpdf->WriteHTML($html);
-         
-         // Output PDF
-         $filename = 'Leger_Nilai_' . $kelas->nama_kelas . '.pdf';
-         return Response::make($mpdf->Output($filename, 'I'), 200, [
-             'Content-Type' => 'application/pdf',
-         ]);
-     }
+        $mpdf->WriteHTML($stylesheet, 1);
+        $mpdf->WriteHTML($html);
 
-
+        // Output PDF
+        $filename = 'Daftar_Nilai_' . $kelas->nama_kelas . '.pdf';
+        return Response::make($mpdf->Output($filename, 'I'), 200, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
 }

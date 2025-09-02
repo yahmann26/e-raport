@@ -61,19 +61,20 @@ class CetakRaportSemesterSantriController extends Controller
             return redirect()->back()->with('error', 'Tidak ada data yang dipilih');
         }
 
-        $anggota_kelas_list = AnggotaKelas::with(['santri', 'kelas.tapel.tgl_raport', 'kelas.guru'])->whereIn('id', $idsArray)->get();
+        $anggota_kelas_list = AnggotaKelas::with(['santri', 'kelas.tapel.tgl_raport', 'kelas.guru'])
+            ->whereIn('id', $idsArray)->get();
+
         if ($anggota_kelas_list->isEmpty()) {
             return redirect()->back()->with('error', 'Raport tidak ditemukan');
         }
 
         $tapel_id = session()->get('tapel_id');
         $mapel_semester_ini = Mapel::where('tapel_id', $tapel_id)->pluck('id');
-
         $mapel_wajib = MappingMapel::whereIn('mapel_id', $mapel_semester_ini)->where('kelompok', 1)->pluck('mapel_id');
         $mapel_pilihan = MappingMapel::whereIn('mapel_id', $mapel_semester_ini)->where('kelompok', 2)->pluck('mapel_id');
         $mapel_mulok = MappingMapel::whereIn('mapel_id', $mapel_semester_ini)->where('kelompok', 3)->pluck('mapel_id');
 
-        // Hitung semua rata-rata santri
+        // Hitung rata-rata semua santri untuk peringkat
         $daftar_nilai_santri = [];
         foreach ($anggota_kelas_list as $anggota) {
             $kelas_id = $anggota->kelas_id;
@@ -96,7 +97,6 @@ class CetakRaportSemesterSantriController extends Controller
             $daftar_nilai_santri[$anggota->id] = $rata_rata;
         }
 
-        // Urutkan dan tentukan peringkat
         arsort($daftar_nilai_santri);
         $peringkat_santri = [];
         $rank = 1;
@@ -104,17 +104,23 @@ class CetakRaportSemesterSantriController extends Controller
             $peringkat_santri[$id] = $rank++;
         }
 
-        // PDF Init
+        $jumlah_santri = $anggota_kelas_list->count();
+        $tanggal_raport = TglRaport::where('tapel_id', $tapel_id)->first();
+
+        // ✅ Pindah ke luar loop
         $mpdf = new \Mpdf\Mpdf([
             'setAutoTopMargin' => 'stretch',
             'mode' => 'utf-8',
-            'format' => 'A4',
+            'format' => [210, 330], // F4 Potrait
             'orientation' => 'P',
+            'margin_left' => 5,
+            'margin_right' => 5,
+            'margin_top' => 5,
+            'margin_bottom' => 5,
+            'margin_header' => 5,
+            'margin_footer' => 5,
+            'tempDir' => storage_path('app/mpdf-temp'), 
         ]);
-
-        $jumlah_santri = $anggota_kelas_list->count();
-
-        $tanggal_raport = TglRaport::where('tapel_id', session()->get('tapel_id'))->first();
 
         foreach ($anggota_kelas_list as $anggota) {
             $kelas_id = $anggota->kelas_id;
@@ -152,14 +158,9 @@ class CetakRaportSemesterSantriController extends Controller
                 ->where('anggota_kelas_id', $anggota->id)
                 ->groupBy('pembelajaran_id')->pluck('id');
 
-            $data_nilai_mapel_wajib = NilaiAkhirRaport::with('pembelajaran.mapel')
-                ->whereIn('id', $nilai_wajib_ids)->get();
-
-            $data_nilai_mapel_pilihan = NilaiAkhirRaport::with('pembelajaran.mapel')
-                ->whereIn('id', $nilai_pilihan_ids)->get();
-
-            $data_nilai_mapel_mulok = NilaiAkhirRaport::with('pembelajaran.mapel')
-                ->whereIn('id', $nilai_mulok_ids)->get();
+            $data_nilai_mapel_wajib = NilaiAkhirRaport::with('pembelajaran.mapel')->whereIn('id', $nilai_wajib_ids)->get();
+            $data_nilai_mapel_pilihan = NilaiAkhirRaport::with('pembelajaran.mapel')->whereIn('id', $nilai_pilihan_ids)->get();
+            $data_nilai_mapel_mulok = NilaiAkhirRaport::with('pembelajaran.mapel')->whereIn('id', $nilai_mulok_ids)->get();
 
             $data_nilai_mapel_wajib->each(function ($item) use ($rata_wajib) {
                 $item->pembelajaran->rata_rata = $rata_wajib[$item->pembelajaran_id] ?? 0;
@@ -187,6 +188,10 @@ class CetakRaportSemesterSantriController extends Controller
             $rata_rata_kelas = $total_mapel > 0 ? $jumlahNilairata / $total_mapel : 0;
 
             $peringkat = $peringkat_santri[$anggota->id] ?? '-';
+            $imagePath = public_path('assets/images/madin-min.png');
+            $logo = base64_encode(file_get_contents($imagePath));
+            $kelas = Kelas::findOrFail($kelas_id);
+            $guru = Kelas::with('guru')->findOrFail($kelas->id);
 
             $html = view('admin.raportsemester.cetak1', compact(
                 'title',
@@ -201,7 +206,9 @@ class CetakRaportSemesterSantriController extends Controller
                 'jumlahNilairata',
                 'jumlah_santri',
                 'peringkat',
-                'tanggal_raport'
+                'tanggal_raport',
+                'logo',
+                'guru'
             ))->render();
 
             $mpdf->AddPage();
@@ -210,6 +217,7 @@ class CetakRaportSemesterSantriController extends Controller
 
         return $mpdf->Output('raport_santri.pdf', 'I');
     }
+
 
 
 

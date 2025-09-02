@@ -38,8 +38,9 @@
 
     <table style="width: 100%; position: fixed; border: none; border-collapse: collapse;">
         <tr>
-            <td style="width: 45%; text-align: left; border: none;">
-                <h1>LOGO</h1>
+            <td style="width: 45%; text-align: left; border: none;" rowspan="2">
+                <img class="logo" src="data:image/png;base64,{{ $logo }}" alt="University logo" width="100"
+                    height="100">
             </td>
             <td style="width: 23%; text-align: left; border: none;">
                 <p>NAMA</p>
@@ -97,10 +98,10 @@
         <tbody>
 
             {{-- MAPEL WAJIB --}}
-            <tr>
+            {{-- <tr>
                 <td colspan="6" style="border: 1px solid black; font-weight: bold; padding-left: 4px;">A. DURUSUL
                     AULA</td>
-            </tr>
+            </tr> --}}
             @if ($data_nilai_mapel_wajib->isEmpty())
                 <tr>
                     <td colspan="6"
@@ -117,7 +118,7 @@
                     <tr>
                         <td style="border: 1px solid black; text-align: left;">{{ $i + 1 }}</td>
                         <td style="border: 1px solid black; padding-left: 4px;">
-                            {{ $nilai->pembelajaran->mapel->nama_mapel }}</td>
+                            {{ $nilai->pembelajaran->mapel->ringkasan_mapel }}</td>
                         <td
                             style="border: 1px solid black; text-align: center; {{ $nilai_angka < 6 ? 'color:#b91c1c; font-style:italic;' : '' }}">
                             {{ str_replace('.', ',', $nilai_angka) }}</td>
@@ -136,10 +137,10 @@
             @endif
 
             {{-- MAPEL PILIHAN --}}
-            <tr>
+            {{-- <tr>
                 <td colspan="6" style="border: 1px solid black; font-weight: bold; padding-left: 4px;">B. DURUSUL
                     ZAIDAH</td>
-            </tr>
+            </tr> --}}
             @if ($data_nilai_mapel_pilihan->isEmpty())
                 <tr>
                     <td colspan="6"
@@ -190,6 +191,13 @@
                     {{ terbilang($jumlahNilairata) }}</td>
             </tr>
 
+            <tr>
+                <td colspan="6"
+                    style="border: 1px solid black; text-align: center; font-style: italic; color: #6b7280;">
+
+                </td>
+            </tr>
+
             {{-- PERINGKAT --}}
 
             <tr>
@@ -201,14 +209,14 @@
             </tr>
 
             {{-- Ekstrakulikuler --}}
-            <tr>
+            {{-- <tr>
                 <td colspan="2">Kegiatan Ekstrakulikuler</td>
                 <td colspan="3">1. Kegiatan Ekstrakulikuler</td>
                 <td></td>
-            </tr>
+            </tr> --}}
 
             {{-- Kepribadian --}}
-            <tr>
+            {{-- <tr>
                 <td colspan="2" rowspan="3" style="text-align: center">Kepribadian</td>
                 <td colspan="3">1. Kelakuan</td>
                 <td></td>
@@ -220,10 +228,10 @@
             <tr>
                 <td colspan="3">3. Kerapian</td>
                 <td></td>
-            </tr>
+            </tr> --}}
 
             {{-- ketidakhadiran --}}
-            <tr>
+            {{-- <tr>
                 <td colspan="2" rowspan="3" style="text-align: center">Ketidakhadiran</td>
                 <td colspan="3">1. Sakit</td>
                 <td></td>
@@ -235,24 +243,40 @@
             <tr>
                 <td colspan="3">3. Alpha</td>
                 <td></td>
-            </tr>
+            </tr> --}}
 
-             {{-- Catatan Ortu --}}
-            <tr>
+            {{-- Catatan Ortu --}}
+            {{-- <tr>
                 <td colspan="6">Catatan Untuk Orang Tua atau Wali :</td>
-                {{-- <td colspan="2">1. Kegiatan Ekstrakulikuler</td> --}}
-            </tr>
+                <td colspan="2">1. Kegiatan Ekstrakulikuler</td>
+            </tr> --}}
         </tbody>
     </table>
 
-    <table>
-            <tr>
-                <td colspan="6" style="border: none">{{ $tanggal_raport->tempat_penerbitan }}, {{ \Carbon\Carbon::parse($tanggal_raport->tanggal_pembagian)->translatedFormat('d F Y') }}
-
-</td>
-            </tr>   
+    <table style="width: 100%; border-collapse: collapse; border: none;">
+        <tr style="border: none;">
+            <td style="width: 35%; border: none;"></td>
+            <td style="width: 35%; border: none;"></td>
+            <td style="width: 30%; text-align: center; border: none;">
+                {{ $tanggal_raport->tempat_penerbitan }},
+                {{ \Carbon\Carbon::parse($tanggal_raport->tanggal_pembagian)->translatedFormat('d F Y') }}
+            </td>
+        </tr>
+        <tr style="border: none;">
+            <td style="width: 35%; text-align: center; border: none;">
+                <p>Kepala Madin</p>
+                <br><br><br><br>
+                <p>TONI ZULIANTO</p>
+            </td>
+            <td style="width: 35%; border: none;"></td>
+            <td style="width: 30%; text-align: center; border: none;">
+                <p>Wali Kelas</p>
+                <br><br><br><br>
+                <p>{{ $guru->guru->nama_lengkap }}</p>
+            </td>
+        </tr>
     </table>
-
+    
 </body>
 
 </html>

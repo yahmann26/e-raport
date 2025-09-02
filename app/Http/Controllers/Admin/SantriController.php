@@ -87,12 +87,12 @@ class SantriController extends Controller
             'status_dalam_keluarga' => 'required',
             'alamat' => 'required|min:3|max:255',
             'nomor_hp' => 'nullable|numeric|digits_between:11,13',
-            'nama_ayah' => 'required|min:3|max:100',
-            'nama_ibu' => 'required|min:3|max:100',
-            'pekerjaan_ayah' => 'required|min:3|max:100',
-            'pekerjaan_ibu' => 'required|min:3|max:100',
-            'nama_wali' => 'nullable|min:3|max:100',
-            'pekerjaan_wali' => 'nullable|min:3|max:100',
+            'nama_ayah' => 'required|max:100',
+            'nama_ibu' => 'required|max:100',
+            'pekerjaan_ayah' => 'required|max:100',
+            'pekerjaan_ibu' => 'required|max:100',
+            'nama_wali' => 'nullable|max:100',
+            'pekerjaan_wali' => 'nullable|max:100',
         ]);
 
         if ($validator->fails()) {

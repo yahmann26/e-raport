@@ -53,9 +53,9 @@ class BobotPenilaianController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'pembelajaran_id' => 'required',
-            'bobot_setoran' => 'required|numeric|between:1,5',
-            'bobot_absen' => 'required|numeric|between:1,5',
-            'bobot_uas' => 'required|numeric|between:1,5',
+            'bobot_setoran' => 'required|numeric',
+            'bobot_absen' => 'required|numeric',
+            'bobot_uas' => 'required|numeric',
         ]);
         if ($validator->fails()) {
             return back()->with('toast_error', $validator->messages()->all()[0])->withInput();
@@ -81,9 +81,9 @@ class BobotPenilaianController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'bobot_setoran' => 'required|numeric|between:1,5',
-            'bobot_absen' => 'required|numeric|between:1,5',
-            'bobot_uas' => 'required|numeric|between:1,5',
+            'bobot_setoran' => 'required|numeric',
+            'bobot_absen' => 'required|numeric',
+            'bobot_uas' => 'required|numeric',
         ]);
         if ($validator->fails()) {
             return back()->with('toast_error', $validator->messages()->all()[0])->withInput();
